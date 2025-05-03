@@ -4,7 +4,7 @@ from flask_cors import CORS
 from agents import Agent, Runner
 
 # Set your OpenAI API key
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = ""
 
 # Initialize Flask app
 app = Flask(__name__)
