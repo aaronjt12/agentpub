@@ -4,8 +4,7 @@ import speech_recognition as sr
 from agents import Agent, Runner
 # Set your OpenAI API key directly for local testing
 import os
-os.environ["OPENAI_API_KEY"] = "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"
-
+os.environ["OPENAI_API_KEY"] = ""
 def listen():
     r = sr.Recognizer()
     with sr.Microphone() as source:
