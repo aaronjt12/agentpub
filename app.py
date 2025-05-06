@@ -1,19 +1,70 @@
 import os
-os.environ["OPENAI_API_KEY"] = ""
-
+import pyttsx3
+import speech_recognition as sr
 from agents import Agent, Runner
+# Set your OpenAI API key directly for local testing
+import os
+os.environ["OPENAI_API_KEY"] = "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"
+
+def listen():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Say something...")
+        audio = r.listen(source)
+    try:
+        return r.recognize_google(audio)
+    except Exception:
+        print("Sorry, I could not understand.")
+        return ""
+
+engine = pyttsx3.init()
+
+def speak(text):
+    engine.say(text)
+    engine.runAndWait()
 
 agent = Agent(
-    name="Assistant",
-    instructions="You are a helpful assistant. You can execute Python code and answer questions.",
-    model="gpt-4o"
+    name="System Analyst",
+    instructions=(
+        "You are System Analyst, a friendly and encouraging customer service focused IT professional. "
+        "You explain concepts clearly, give examples, resolve complex technical issues. "
+        "You can hold realtime conversation and answer any general questions surrounding IT."
+    ),
+    model="gpt-4o",
+ 
 )
 
+def strip_asterisks(text):
+    return text.replace("*", "")
+
 def main():
-    user_input = input("Ask the agent anything: ")
-    result = Runner.run_sync(agent, user_input)
-    print("\nAgent output:")
-    print(result.final_output)
+    greeting = "Hey, I heard you were having some trouble today. How can I help?"
+    print(greeting)
+    speak(greeting)
+    print("Welcome to System Analyst! You can type or say your question.")
+    while True:
+        choice = input("Press [Enter] to type, or 'v' + [Enter] to use your voice (or 'exit' to quit): ").strip().lower()
+        if choice == "exit":
+            print("Goodbye!")
+            break
+        if choice == "v":
+            user_input = listen()
+            if not user_input:
+                continue
+            print(f"You said: {user_input}")
+        else:
+            user_input = input("Ask the agent anything: ")
+            if user_input.strip().lower() in {"exit", "quit"}:
+                print("Goodbye!")
+                break
+        try:
+            result = Runner.run_sync(agent, user_input)
+            output = strip_asterisks(result.final_output)
+            print("\nAgent output:")
+            print(output)
+            speak(output)
+        except Exception as e:
+            print(f"Error getting response: {e}")
 
 if __name__ == "__main__":
     main()
